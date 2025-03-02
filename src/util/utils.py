@@ -26,3 +26,22 @@ def replace_blob_image_refs(markdown, images):
         )
         markdown = pattern.sub(r'\1images/' + img["filename"] + ')', markdown)
     return markdown
+
+
+def decode_literal_unicode_escapes(text: str) -> str:
+    """
+    Decode literal backslash-escaped Unicode sequences like \\uXXXX or
+    \\UXXXXXXXX, preserving normal emoji codepoints and other characters.
+    """
+    pattern: re.Pattern = re.compile(r'(\\u[0-9A-Fa-f]{4}|\\U[0-9A-Fa-f]{8})+')
+
+    def decode_match(match: re.Match) -> str:
+        raw: str = match.group(0)
+        try:
+            return raw.encode("ascii", errors="ignore").decode(
+                "unicode_escape", errors="ignore"
+            )
+        except UnicodeDecodeError:
+            return raw
+
+    return pattern.sub(decode_match, text)

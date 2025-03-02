@@ -3,7 +3,6 @@ Handles API communication with Confluence, including support for both
 numeric page URLs ("/pages/12345") and space/title URLs ("/display/SPACE/TITLE").
 """
 
-
 import re
 import requests
 from urllib.parse import urlparse, quote

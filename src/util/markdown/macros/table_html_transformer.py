@@ -4,7 +4,6 @@ Module: table_html_transformer.py
 Transforms raw table HTML to convert Confluence tasks into HTML checkboxes.
 """
 
-
 import re
 from html.parser import HTMLParser
 from typing import List, Tuple, Dict, Optional
