@@ -488,7 +488,7 @@ class MarkdownParser(HTMLParser):
         """
         Handle inline code start.
         """
-        self._append_text("`")
+        self._append_text(" `")
 
     def handle_code_end(self, tag: str) -> None:
         """
@@ -518,7 +518,7 @@ class MarkdownParser(HTMLParser):
         """
         Handle strong text start.
         """
-        self._append_text("**")
+        self._append_text(" **")
 
     def handle_strong_end(self, tag: str) -> None:
         """
@@ -532,7 +532,7 @@ class MarkdownParser(HTMLParser):
         """
         Handle emphasized text start.
         """
-        self._append_text("_")
+        self._append_text(" _")
 
     def handle_em_end(self, tag: str) -> None:
         """
@@ -546,7 +546,7 @@ class MarkdownParser(HTMLParser):
         """
         Handle underline text start.
         """
-        self._append_text("<u>")
+        self._append_text(" <u>")
 
     def handle_u_end(self, tag: str) -> None:
         """
@@ -560,7 +560,7 @@ class MarkdownParser(HTMLParser):
         """
         Handle deleted text start.
         """
-        self._append_text("~~")
+        self._append_text(" ~~")
 
     def handle_del_end(self, tag: str) -> None:
         """
