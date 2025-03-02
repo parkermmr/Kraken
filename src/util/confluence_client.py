@@ -1,7 +1,9 @@
 """
 Handles API communication with Confluence, including support for both
-numeric page URLs ("/pages/12345") and space/title URLs ("/display/SPACE/TITLE").
+numeric page URLs ("/pages/12345"), space/title URLs ("/display/SPACE/TITLE"),
+and space-only URLs ("/spaces/SPACE" or "/display/SPACE").
 """
+
 
 import re
 import requests
@@ -10,7 +12,7 @@ from urllib.parse import urlparse, quote
 
 class ConfluenceClient:
     """
-    Client to interact with the Confluence REST API.
+    Client to interact with Confluence's REST API.
     """
 
     def __init__(self, base_url: str, username: str, token: str) -> None:
@@ -21,6 +23,7 @@ class ConfluenceClient:
         parsed = urlparse(self.base_url)
         self.domain: str = f"{parsed.scheme}://{parsed.netloc}{parsed.path}"
         self.base_api_url: str = f"{self.domain}/rest/api/content"
+        self.space_api_url: str = f"{self.domain}/rest/api/space"
         self.session: requests.Session = requests.Session()
         self.session.auth = (username, token)
 
@@ -51,11 +54,10 @@ class ConfluenceClient:
         url: str = f"{self.base_api_url}/{page_id}/child/attachment"
         resp: requests.Response = self.session.get(url)
         resp.raise_for_status()
-
         images: list = []
-        data: dict = resp.json()
-        for att in data.get("results", []):
-            media_type: str = att["metadata"].get("mediaType", "")
+        for att in resp.json().get("results", []):
+            meta: dict = att.get("metadata", {})
+            media_type: str = meta.get("mediaType", "")
             if "image" in media_type:
                 fn: str = att["title"]
                 rel: str = att["_links"]["download"]
@@ -65,21 +67,34 @@ class ConfluenceClient:
 
     def extract_page_id(self, page_url: str) -> str:
         """
-        Extract the numeric ID from a Confluence URL of the form
-        '/pages/12345', or else parse '/display/SPACE/TITLE' and
-        look up the numeric ID from space + title.
+        Extract the numeric ID from a Confluence URL.
+        1) If it matches '/pages/(\\d+)', return the numeric ID.
+        2) Else if it matches '/display/SPACE/TITLE', look up numeric ID from space.
+        3) Else if it matches '/spaces/SPACE' or '/display/SPACE',
+           fetch the default homepage ID for that space.
         """
         numeric: re.Match = re.search(r"/pages/(\d+)", page_url)
         if numeric:
             return numeric.group(1)
 
-        space_title: re.Match = re.search(r"/display/([^/]+)/([^/]+)$", page_url)
+        space_title: re.Match = re.search(
+            r"/(?:display|spaces)/([^/]+)/([^/]+)$",
+            page_url
+        )
         if space_title:
             space_key: str = space_title.group(1)
             page_title: str = space_title.group(2)
             return self.get_page_id_by_space_title(space_key, page_title)
 
-        raise ValueError(f"Invalid Confluence URL format: {page_url}")
+        space_only: re.Match = re.search(
+            r"/(?:display|spaces)/([^/]+)/?$",
+            page_url
+        )
+        if space_only:
+            space_key_only: str = space_only.group(1)
+            return self.get_space_homepage_id(space_key_only)
+
+        raise ValueError(f"Unrecognized Confluence URL format: {page_url}")
 
     def get_page_id_by_space_title(self, space_key: str, page_title: str) -> str:
         """
@@ -104,3 +119,20 @@ class ConfluenceClient:
             )
             raise ValueError(msg)
         return results[0]["id"]
+
+    def get_space_homepage_id(self, space_key: str) -> str:
+        """
+        Retrieve the homepage ID of a space (its default page).
+        If the space doesn't exist or no homepage is found, raise ValueError.
+        """
+        safe_space: str = quote(space_key, safe="")
+        url: str = f"{self.space_api_url}/{safe_space}?expand=homepage"
+        resp: requests.Response = self.session.get(url)
+        resp.raise_for_status()
+        data: dict = resp.json()
+        homepage: dict = data.get("homepage")
+        if not homepage or "id" not in homepage:
+            raise ValueError(
+                f"Space '{space_key}' has no homepage or isn't accessible."
+            )
+        return homepage["id"]
