@@ -6,9 +6,13 @@ import re
 
 
 def sanitize_title(title):
-    """Convert a page title into a safe filename."""
-    title = title.strip().replace(" ", "_")
-    return re.sub(r"[^\w\-\.]", "", title)
+    """
+    Convert a page title into a safe filename
+    while keeping recognizable characters.
+    """
+    title = title.strip()
+    title = title.replace("/", "-").replace("\\", "-")
+    return re.sub(r'[<>:"|?*]', "", title)
 
 
 def replace_blob_image_refs(markdown, images):

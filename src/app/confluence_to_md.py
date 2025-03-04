@@ -50,10 +50,7 @@ def process_page(client, writer, converter, page_id, parent_dir, is_root=False):
     os.makedirs(output_dir, exist_ok=True)
 
     html_content = page["body"]["storage"]["value"]
-    raw_html_file = os.path.join(output_dir, "raw.html")
-    with open(raw_html_file, "w", encoding="utf-8") as f:
-        f.write(html_content)
-    logger.info("Wrote raw HTML source to %s", raw_html_file)
+    logger.debug("HTML snippet (first 500 chars): %s", html_content[:500])
 
     markdown_content = converter.convert(html_content)
     logger.debug("Markdown snippet (first 500 chars): %s", markdown_content[:500])
