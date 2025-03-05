@@ -5,4 +5,5 @@ exclude =
     __pycache__,
     old,
     build,
-    dist
+    dist,
+    site_packages
