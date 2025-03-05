@@ -9,7 +9,7 @@ on:
 jobs:
   conditional-test:
     if: github.ref == 'refs/heads/main'
-    uses: compendium/.github/workflows/python-pytest.yml@main
+    uses: parkermmr/compendium/.github/workflows/python-pytest.yml@main
     with:
       python-version: "3.10"
     secrets:
@@ -17,7 +17,7 @@ jobs:
 
   conditional-lint:
     if: github.ref == 'refs/heads/main'
-    uses: compendium/.github/workflows/python-lint.yml@main
+    uses: parkermmr/compendium/.github/workflows/python-lint.yml@main
     with:
       python-version: "3.10"
     secrets:
