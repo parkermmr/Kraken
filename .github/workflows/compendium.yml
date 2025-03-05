@@ -12,13 +12,9 @@ jobs:
     uses: parkermmr/compendium/.github/workflows/python-pytest.yml@main
     with:
       python-version: "3.10"
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   conditional-lint:
     if: github.ref == 'refs/heads/main'
     uses: parkermmr/compendium/.github/workflows/python-lint.yml@main
     with:
       python-version: "3.10"
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
