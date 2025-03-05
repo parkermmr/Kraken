@@ -7,6 +7,7 @@ class Formatter(logging.Formatter):
     A formatter that adjusts its format based on
     the log type and optionally adds ANSI colours.
     """
+
     def __init__(self, colored: bool = False):
         self.colored = colored
         self.user_fmt = (
@@ -20,17 +21,15 @@ class Formatter(logging.Formatter):
             "[URI: %(request_uri)s] - %(message)s"
         )
         self.default_fmt = "%(asctime)s - %(levelname)s - %(message)s"
-        super().__init__(fmt=self.default_fmt,
-                         datefmt="%Y-%m-%dT%H:%M:%SZ",
-                         style='%')
+        super().__init__(fmt=self.default_fmt, datefmt="%Y-%m-%dT%H:%M:%SZ", style="%")
         logging.Formatter.converter = time.gmtime
 
     def format(self, record: logging.LogRecord) -> str:
-        if hasattr(record, 'log_type'):
+        if hasattr(record, "log_type"):
             fmt = self.user_fmt if record.log_type == "user" else self.data_fmt
         else:
             fmt = self.default_fmt
-        if getattr(record, 'api_response_code', None) is not None:
+        if getattr(record, "api_response_code", None) is not None:
             fmt += " - [Response: %(api_response_code)s]"
         self._style._fmt = fmt
         if self.colored:

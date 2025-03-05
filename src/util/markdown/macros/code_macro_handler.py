@@ -42,7 +42,7 @@ class CodeMacroHandler:
         """
         snippet: str = ""
         if self.start_offset is not None:
-            snippet = raw_html[self.start_offset:offset]
+            snippet = raw_html[self.start_offset : offset]
         begin: int = snippet.lower().find("<ac:plain-text-body>")
         text: str = ""
         if begin != -1:
@@ -50,7 +50,7 @@ class CodeMacroHandler:
             if end != -1:
                 after: int = snippet.find(">", begin) + 1
                 text = snippet[after:end].strip()
-        cdata_pat: re.Pattern = re.compile(r'^<!\[CDATA\[(.*)\]\]>$', re.DOTALL)
+        cdata_pat: re.Pattern = re.compile(r"^<!\[CDATA\[(.*)\]\]>$", re.DOTALL)
         match: Optional[re.Match] = cdata_pat.match(text)
         if match:
             text = match.group(1).lstrip("\n\r").rstrip()

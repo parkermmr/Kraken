@@ -8,7 +8,6 @@ extracts content from Confluence code macros into fenced code blocks, and
 derives the actual image filename for Gliffy diagrams from parameters.
 """
 
-
 import re
 from html.parser import HTMLParser
 from typing import Any, Dict, List, Optional, Tuple
@@ -60,31 +59,27 @@ class MarkdownParser(HTMLParser):
         """
         Post-process the output, decoding Unicode escapes and converting links.
         """
+
         def clean_heading(match: re.Match) -> str:
             return match.group(0).replace("**", "")
 
         def transform_links(txt: str) -> str:
-            pat: re.Pattern = re.compile(r'(https?://\S+)')
-            return pat.sub(r'[Click Me ️👆](\1#code)', txt)
+            pat: re.Pattern = re.compile(r"(https?://\S+)")
+            return pat.sub(r"[Click Me ️👆](\1#code)", txt)
 
         text: str = re.sub(
-            r'^(#+\s+.*)$',
-            lambda m: clean_heading(m),
-            text_in,
-            flags=re.MULTILINE
+            r"^(#+\s+.*)$", lambda m: clean_heading(m), text_in, flags=re.MULTILINE
         )
-        text = re.sub(r'(?<!\n)(!\[)', r'\n\1', text)
-        text = re.sub(r'(\]\(images/[^)]+\))', r'\1\n', text)
-        text = re.sub(r'^src:\s*', '', text, flags=re.MULTILINE)
+        text = re.sub(r"(?<!\n)(!\[)", r"\n\1", text)
+        text = re.sub(r"(\]\(images/[^)]+\))", r"\1\n", text)
+        text = re.sub(r"^src:\s*", "", text, flags=re.MULTILINE)
         lines: List[str] = [ln.rstrip() for ln in text.splitlines()]
         final: str = "\n".join(lines)
         final = decode_literal_unicode_escapes(final)
         final = transform_links(final)
         return final
 
-    def handle_starttag(
-        self, tag: str, attrs: List[Tuple[str, Optional[str]]]
-    ) -> None:
+    def handle_starttag(self, tag: str, attrs: List[Tuple[str, Optional[str]]]) -> None:
         """
         Handle the start of an HTML tag.
         """
@@ -105,10 +100,7 @@ class MarkdownParser(HTMLParser):
             if name == "gliffy":
                 self.gliffy_macro.begin_gliffy(self._raw_offset())
 
-        if (
-            self.code_macro.in_code_macro
-            and t == "ac:plain-text-body"
-        ):
+        if self.code_macro.in_code_macro and t == "ac:plain-text-body":
             self.code_macro.begin_code_body()
 
         method_n: str = self.config.get(t, "default_start_handler")
@@ -135,29 +127,16 @@ class MarkdownParser(HTMLParser):
         if t in self.tag_stack:
             self.tag_stack.remove(t)
 
-        if (
-            self.code_macro.in_code_macro
-            and t == "ac:plain-text-body"
-        ):
+        if self.code_macro.in_code_macro and t == "ac:plain-text-body":
             self.code_macro.end_code_body()
 
-        if (
-            self.code_macro.in_code_macro
-            and t == "ac:structured-macro"
-        ):
-            final: str = self.code_macro.finalize(
-                self.rawdata,
-                self._raw_offset()
-            )
+        if self.code_macro.in_code_macro and t == "ac:structured-macro":
+            final: str = self.code_macro.finalize(self.rawdata, self._raw_offset())
             self.output.append(final)
 
-        if (
-            self.gliffy_macro.in_gliffy
-            and t == "ac:structured-macro"
-        ):
+        if self.gliffy_macro.in_gliffy and t == "ac:structured-macro":
             gliffy_block: str = self.gliffy_macro.finalize(
-                self.rawdata,
-                self._raw_offset()
+                self.rawdata, self._raw_offset()
             )
             self.output.append(gliffy_block)
 
@@ -184,10 +163,7 @@ class MarkdownParser(HTMLParser):
         Handle textual data in the HTML, skipping data
         inside code/gliffy macros to avoid leftover IDs.
         """
-        if (
-            self.code_macro.in_code_macro
-            and not self.code_macro.in_code_body
-        ):
+        if self.code_macro.in_code_macro and not self.code_macro.in_code_body:
             return
         if self.gliffy_macro.in_gliffy:
             return
@@ -198,9 +174,7 @@ class MarkdownParser(HTMLParser):
             if c:
                 self._append_text(c)
 
-    def default_start_handler(
-        self, tag: str, attrs: Dict[str, Optional[str]]
-    ) -> None:
+    def default_start_handler(self, tag: str, attrs: Dict[str, Optional[str]]) -> None:
         """
         Default handler for start tags.
         """
@@ -212,9 +186,7 @@ class MarkdownParser(HTMLParser):
         """
         pass
 
-    def default_self_handler(
-        self, tag: str, attrs: Dict[str, Optional[str]]
-    ) -> None:
+    def default_self_handler(self, tag: str, attrs: Dict[str, Optional[str]]) -> None:
         """
         Default handler for self-closing tags.
         """
@@ -276,9 +248,7 @@ class MarkdownParser(HTMLParser):
             return before + col
         return len(self.rawdata)
 
-    def handle_heading(
-        self, tag: str, attrs: Dict[str, Optional[str]]
-    ) -> None:
+    def handle_heading(self, tag: str, attrs: Dict[str, Optional[str]]) -> None:
         """
         Handle heading tags.
         """
@@ -289,17 +259,13 @@ class MarkdownParser(HTMLParser):
             lv = 1
         self._append_text("\n" + "#" * lv + " ")
 
-    def handle_paragraph(
-        self, tag: str, attrs: Dict[str, Optional[str]]
-    ) -> None:
+    def handle_paragraph(self, tag: str, attrs: Dict[str, Optional[str]]) -> None:
         """
         Handle paragraph tags.
         """
         self._append_text("\n\n")
 
-    def handle_ul(
-        self, tag: str, attrs: Dict[str, Optional[str]]
-    ) -> None:
+    def handle_ul(self, tag: str, attrs: Dict[str, Optional[str]]) -> None:
         """
         Handle unordered list start.
         """
@@ -313,9 +279,7 @@ class MarkdownParser(HTMLParser):
         if self.list_stack:
             self.list_stack.pop()
 
-    def handle_ol(
-        self, tag: str, attrs: Dict[str, Optional[str]]
-    ) -> None:
+    def handle_ol(self, tag: str, attrs: Dict[str, Optional[str]]) -> None:
         """
         Handle ordered list start.
         """
@@ -329,9 +293,7 @@ class MarkdownParser(HTMLParser):
         if self.list_stack:
             self.list_stack.pop()
 
-    def handle_li(
-        self, tag: str, attrs: Dict[str, Optional[str]]
-    ) -> None:
+    def handle_li(self, tag: str, attrs: Dict[str, Optional[str]]) -> None:
         """
         Handle list item start.
         """
@@ -354,9 +316,7 @@ class MarkdownParser(HTMLParser):
         content: str = "".join(self.list_item_buffer).strip()
         self.output.append(f"\n{prefix}{content}")
 
-    def handle_code(
-        self, tag: str, attrs: Dict[str, Optional[str]]
-    ) -> None:
+    def handle_code(self, tag: str, attrs: Dict[str, Optional[str]]) -> None:
         """
         Handle inline code start.
         """
@@ -368,9 +328,7 @@ class MarkdownParser(HTMLParser):
         """
         self._append_text("` ")
 
-    def handle_pre(
-        self, tag: str, attrs: Dict[str, Optional[str]]
-    ) -> None:
+    def handle_pre(self, tag: str, attrs: Dict[str, Optional[str]]) -> None:
         """
         Handle code block start.
         """
@@ -384,9 +342,7 @@ class MarkdownParser(HTMLParser):
         self.in_code_block = False
         self._append_text("\n```\n")
 
-    def handle_strong(
-        self, tag: str, attrs: Dict[str, Optional[str]]
-    ) -> None:
+    def handle_strong(self, tag: str, attrs: Dict[str, Optional[str]]) -> None:
         """
         Handle strong text start.
         """
@@ -398,9 +354,7 @@ class MarkdownParser(HTMLParser):
         """
         self._append_text("** ")
 
-    def handle_em(
-        self, tag: str, attrs: Dict[str, Optional[str]]
-    ) -> None:
+    def handle_em(self, tag: str, attrs: Dict[str, Optional[str]]) -> None:
         """
         Handle emphasized text start.
         """
@@ -412,9 +366,7 @@ class MarkdownParser(HTMLParser):
         """
         self._append_text("_ ")
 
-    def handle_u(
-        self, tag: str, attrs: Dict[str, Optional[str]]
-    ) -> None:
+    def handle_u(self, tag: str, attrs: Dict[str, Optional[str]]) -> None:
         """
         Handle underline text start.
         """
@@ -426,9 +378,7 @@ class MarkdownParser(HTMLParser):
         """
         self._append_text("</u> ")
 
-    def handle_del(
-        self, tag: str, attrs: Dict[str, Optional[str]]
-    ) -> None:
+    def handle_del(self, tag: str, attrs: Dict[str, Optional[str]]) -> None:
         """
         Handle deleted text start.
         """
@@ -440,9 +390,7 @@ class MarkdownParser(HTMLParser):
         """
         self._append_text("~~ ")
 
-    def handle_ac_emoticon(
-        self, tag: str, attrs: Dict[str, Optional[str]]
-    ) -> None:
+    def handle_ac_emoticon(self, tag: str, attrs: Dict[str, Optional[str]]) -> None:
         """
         Handle Confluence emoticon tags.
         """
@@ -459,9 +407,7 @@ class MarkdownParser(HTMLParser):
         """
         pass
 
-    def handle_ac_task_list(
-        self, tag: str, attrs: Dict[str, Optional[str]]
-    ) -> None:
+    def handle_ac_task_list(self, tag: str, attrs: Dict[str, Optional[str]]) -> None:
         """
         Handle task list start.
         """
@@ -473,9 +419,7 @@ class MarkdownParser(HTMLParser):
         """
         self._append_text("\n")
 
-    def handle_ac_task(
-        self, tag: str, attrs: Dict[str, Optional[str]]
-    ) -> None:
+    def handle_ac_task(self, tag: str, attrs: Dict[str, Optional[str]]) -> None:
         """
         Handle task start.
         """
@@ -490,19 +434,14 @@ class MarkdownParser(HTMLParser):
         cbox: str = "[x]" if self.task_status == "complete" else "[ ]"
         combined: str = "".join(self.task_body_buffer).strip()
         final: str = re.sub(
-            r'^[0-9]+\s*(complete|incomplete)\s*',
-            '',
-            combined,
-            flags=re.IGNORECASE
+            r"^[0-9]+\s*(complete|incomplete)\s*", "", combined, flags=re.IGNORECASE
         )
         self.output.append(f"\n- {cbox} {final}")
         self.in_task_body = False
         self.task_body_buffer = []
         self.task_status = None
 
-    def handle_ac_task_body(
-        self, tag: str, attrs: Dict[str, Optional[str]]
-    ) -> None:
+    def handle_ac_task_body(self, tag: str, attrs: Dict[str, Optional[str]]) -> None:
         """
         Handle task body start.
         """
@@ -514,9 +453,7 @@ class MarkdownParser(HTMLParser):
         """
         self.in_task_body = False
 
-    def handle_img(
-        self, tag: str, attrs: Dict[str, Optional[str]]
-    ) -> None:
+    def handle_img(self, tag: str, attrs: Dict[str, Optional[str]]) -> None:
         """
         Handle image tags.
         """
@@ -524,9 +461,7 @@ class MarkdownParser(HTMLParser):
         s: str = sanitize_title(alt)
         self._append_text(f"\n![{s}](images/{s})\n")
 
-    def handle_ac_image(
-        self, tag: str, attrs: Dict[str, Optional[str]]
-    ) -> None:
+    def handle_ac_image(self, tag: str, attrs: Dict[str, Optional[str]]) -> None:
         """
         Handle ac:image tags.
         """

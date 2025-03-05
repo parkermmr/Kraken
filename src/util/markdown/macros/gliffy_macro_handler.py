@@ -29,10 +29,10 @@ class GliffyMacroHandler:
         """
         snippet: str = ""
         if self.start_offset is not None:
-            snippet = raw_html[self.start_offset:offset]
+            snippet = raw_html[self.start_offset : offset]
         pat: re.Pattern = re.compile(
             r'<ac:parameter\s+ac:name="name">\s*([^<]+)\s*</ac:parameter>',
-            flags=re.IGNORECASE
+            flags=re.IGNORECASE,
         )
         found: Optional[re.Match] = pat.search(snippet)
         diag: str = found.group(1).strip() if found else "gliffy_diagram"

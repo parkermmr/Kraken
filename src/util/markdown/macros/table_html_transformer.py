@@ -34,14 +34,10 @@ class TableHtmlTransformer(HTMLParser):
         """Return the transformed HTML output."""
         return "".join(self.output)
 
-    def handle_starttag(
-        self, tag: str, attrs: List[Tuple[str, Optional[str]]]
-    ) -> None:
+    def handle_starttag(self, tag: str, attrs: List[Tuple[str, Optional[str]]]) -> None:
         """Handle the start of an HTML tag."""
         tag_lower: str = tag.lower()
-        attr_dict: Dict[str, str] = {
-            k.lower(): v for k, v in attrs if v is not None
-        }
+        attr_dict: Dict[str, str] = {k.lower(): v for k, v in attrs if v is not None}
         if tag_lower == "ac:task-id":
             return
         if tag_lower == "span" and "class" in attr_dict:
@@ -74,17 +70,13 @@ class TableHtmlTransformer(HTMLParser):
             text: str = "".join(self.task_body_buffer).strip()
 
             text = re.sub(
-                r'^[0-9\.\)\(\-_\s]*(complete|incomplete)?\s*',
-                '',
+                r"^[0-9\.\)\(\-_\s]*(complete|incomplete)?\s*",
+                "",
                 text,
-                flags=re.IGNORECASE
+                flags=re.IGNORECASE,
             )
-            checked: str = (
-                "checked" if self.task_status.lower() == "complete" else ""
-            )
-            self.output.append(
-                f"<li><input type='checkbox' {checked}> {text}</li>"
-            )
+            checked: str = "checked" if self.task_status.lower() == "complete" else ""
+            self.output.append(f"<li><input type='checkbox' {checked}> {text}</li>")
             self.task_body_buffer = []
             self.in_ac_task = False
             return
@@ -107,17 +99,16 @@ class TableHtmlTransformer(HTMLParser):
             return
         if self.in_ac_task and not self.in_task_body and not self.in_ac_task_status:
             check_data: str = data.strip().lower()
-            if re.match(r'^[0-9]+(\.|\)|\s|$)', check_data) or \
-               re.match(r'^[0-9]+(\.|\)|\s)*(complete|incomplete)?$', check_data):
+            if re.match(r"^[0-9]+(\.|\)|\s|$)", check_data) or re.match(
+                r"^[0-9]+(\.|\)|\s)*(complete|incomplete)?$", check_data
+            ):
                 return
         if self.in_task_body:
             self.task_body_buffer.append(data)
         else:
             self.output.append(data)
 
-    def _append_raw_tag(
-        self, tag: str, attrs: Dict[str, str], is_start: bool
-    ) -> None:
+    def _append_raw_tag(self, tag: str, attrs: Dict[str, str], is_start: bool) -> None:
         """Append a raw HTML tag to the output."""
         if is_start:
             attr_str: str = " ".join(f'{k}="{v}"' for k, v in attrs.items())

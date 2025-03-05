@@ -15,7 +15,7 @@ class FileWriter:
     def save_markdown_file(self, file_path, content):
         """Save Markdown content to a specific file path."""
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
-        with open(file_path, "w", encoding="utf-8", errors='ignore') as f:
+        with open(file_path, "w", encoding="utf-8", errors="ignore") as f:
             f.write(content)
         logger.info("Saved file: %s", file_path)
 

@@ -30,8 +30,9 @@ def process_page(client, writer, converter, page_id, parent_dir, is_root=False):
     try:
         page = client.get_page(page_id)
     except Exception as exc:
-        logger.error("Error retrieving page %s: %s", page_id, exc,
-                     extra={"caller": __name__})
+        logger.error(
+            "Error retrieving page %s: %s", page_id, exc, extra={"caller": __name__}
+        )
         return
 
     title = page.get("title", f"page_{page_id}")
@@ -61,31 +62,42 @@ def process_page(client, writer, converter, page_id, parent_dir, is_root=False):
     for img in images:
         try:
             sanitized_name = sanitize_title(img["filename"])
-            writer.save_image(output_dir, sanitized_name, img["url"],
-                              session=client.session)
+            writer.save_image(
+                output_dir, sanitized_name, img["url"], session=client.session
+            )
         except Exception as exc:
-            logger.error("Error saving image %s: %s", img["filename"], exc,
-                         extra={"caller": __name__})
+            logger.error(
+                "Error saving image %s: %s",
+                img["filename"],
+                exc,
+                extra={"caller": __name__},
+            )
     for child in children:
-        process_page(client, writer, converter, child["id"], output_dir,
-                     is_root=False)
+        process_page(client, writer, converter, child["id"], output_dir, is_root=False)
 
 
 class ConfluenceApp:
     """Main application class to run the export process."""
+
     def __init__(self):
         self.args = parse_args()
-        self.client = ConfluenceClient(self.args.base_url,
-                                       self.args.username,
-                                       self.args.token)
+        self.client = ConfluenceClient(
+            self.args.base_url, self.args.username, self.args.token
+        )
         self.writer = FileWriter()
         self.converter = MarkdownConverter(self.client)
 
     def run(self):
         """Execute the export process."""
         page_id = self.client.extract_page_id(self.args.page_url)
-        process_page(self.client, self.writer, self.converter, page_id,
-                     self.args.output_dir, is_root=True)
+        process_page(
+            self.client,
+            self.writer,
+            self.converter,
+            page_id,
+            self.args.output_dir,
+            is_root=True,
+        )
         logger.info("Download complete.", extra={"caller": __name__})
 
 

@@ -33,8 +33,8 @@ LOGGING_CONFIG = {
             "handlers": ["fastapi"],
             "level": "WARNING",
             "propagate": False,
-        }
-    }
+        },
+    },
 }
 
 

@@ -4,7 +4,6 @@ Module: markdown_parser_config.py
 Defines the tag handlers mapping for the MarkdownParser.
 """
 
-
 from typing import Dict
 
 TAG_HANDLERS: Dict[str, str] = {

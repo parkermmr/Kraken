@@ -4,7 +4,6 @@ numeric page URLs ("/pages/12345"), space/title URLs ("/display/SPACE/TITLE"),
 and space-only URLs ("/spaces/SPACE" or "/display/SPACE").
 """
 
-
 import re
 import requests
 from urllib.parse import urlparse, quote
@@ -78,18 +77,14 @@ class ConfluenceClient:
             return numeric.group(1)
 
         space_title: re.Match = re.search(
-            r"/(?:display|spaces)/([^/]+)/([^/]+)$",
-            page_url
+            r"/(?:display|spaces)/([^/]+)/([^/]+)$", page_url
         )
         if space_title:
             space_key: str = space_title.group(1)
             page_title: str = space_title.group(2)
             return self.get_page_id_by_space_title(space_key, page_title)
 
-        space_only: re.Match = re.search(
-            r"/(?:display|spaces)/([^/]+)/?$",
-            page_url
-        )
+        space_only: re.Match = re.search(r"/(?:display|spaces)/([^/]+)/?$", page_url)
         if space_only:
             space_key_only: str = space_only.group(1)
             return self.get_space_homepage_id(space_key_only)
@@ -114,8 +109,7 @@ class ConfluenceClient:
         results: list = data.get("results", [])
         if not results:
             msg: str = (
-                f"No page found for space '{space_key}' "
-                f"and title '{page_title}'."
+                f"No page found for space '{space_key}' " f"and title '{page_title}'."
             )
             raise ValueError(msg)
         return results[0]["id"]

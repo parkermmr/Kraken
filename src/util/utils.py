@@ -25,10 +25,9 @@ def replace_blob_image_refs(markdown, images):
     """
     for img in images:
         pattern = re.compile(
-            r'(!\[[^\]]*' + re.escape(img["filename"]) +
-            r'[^\]]*\]\()blob:[^)]+\)'
+            r"(!\[[^\]]*" + re.escape(img["filename"]) + r"[^\]]*\]\()blob:[^)]+\)"
         )
-        markdown = pattern.sub(r'\1images/' + img["filename"] + ')', markdown)
+        markdown = pattern.sub(r"\1images/" + img["filename"] + ")", markdown)
     return markdown
 
 
@@ -37,7 +36,7 @@ def decode_literal_unicode_escapes(text: str) -> str:
     Decode literal backslash-escaped Unicode sequences like \\uXXXX or
     \\UXXXXXXXX, preserving normal emoji codepoints and other characters.
     """
-    pattern: re.Pattern = re.compile(r'(\\u[0-9A-Fa-f]{4}|\\U[0-9A-Fa-f]{8})+')
+    pattern: re.Pattern = re.compile(r"(\\u[0-9A-Fa-f]{4}|\\U[0-9A-Fa-f]{8})+")
 
     def decode_match(match: re.Match) -> str:
         raw: str = match.group(0)
