@@ -6,7 +6,7 @@ Transforms raw table HTML to convert Confluence tasks into HTML checkboxes.
 
 import re
 from html.parser import HTMLParser
-from typing import List, Tuple, Dict, Optional
+from typing import Dict, List, Optional, Tuple
 
 
 def transform_table_html(table_html: str) -> str:

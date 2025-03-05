@@ -9,12 +9,13 @@ Usage:
 """
 
 import os
+
 from src.app.config import parse_args
 from src.util.confluence_client import ConfluenceClient
 from src.util.file_writer import FileWriter
-from src.util.markdown.markdown_converter import MarkdownConverter
-from src.util.logging.logging_config import setup_logging
 from src.util.logging.logger import Logger
+from src.util.logging.logging_config import setup_logging
+from src.util.markdown.markdown_converter import MarkdownConverter
 from src.util.utils import sanitize_title
 
 setup_logging()

@@ -3,7 +3,9 @@ Handles writing Markdown and image files.
 """
 
 import os
+
 import requests
+
 from src.util.logging.logger import Logger
 
 logger = Logger(__name__, level=20, colored=False)

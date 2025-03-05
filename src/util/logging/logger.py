@@ -1,7 +1,8 @@
 import logging
 import logging.config
-from typing import Optional, Any
 from functools import wraps
+from typing import Any, Optional
+
 from src.util.logging.formatter import Formatter
 
 

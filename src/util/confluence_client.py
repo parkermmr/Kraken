@@ -5,8 +5,9 @@ and space-only URLs ("/spaces/SPACE" or "/display/SPACE").
 """
 
 import re
+from urllib.parse import quote, urlparse
+
 import requests
-from urllib.parse import urlparse, quote
 
 
 class ConfluenceClient:

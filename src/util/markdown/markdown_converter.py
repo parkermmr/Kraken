@@ -10,6 +10,7 @@ link) is sanitized (e.g. spaces become underscores).
 """
 
 import logging
+
 from src.util.markdown.markdown_parser import MarkdownParser
 
 logger = logging.getLogger(__name__)
