@@ -1,25 +1,28 @@
-FROM python:3.12-slim as builder
+FROM python:3.9-slim
 
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+RUN apt-get update && apt-get install -y git
 
-WORKDIR /install
+RUN mkdir -p /home/somebody/app
+WORKDIR /home/somebody/app
 
-COPY pyproject.toml poetry.lock* ./
+COPY poetry.lock .
+COPY pyproject.toml .
 
-RUN pip install --upgrade pip && pip install poetry
+ARG PYTHON_REGISTRY=pypi.org/simple
+ARG POETRY_VERSION=1.5.0
 
-RUN poetry config virtualenvs.create false && poetry install
+RUN pip config --user set global.index-url "https://${PYTHON_REGISTRY}" && \
+    pip config --user set global.trusted-host "${PYTHON_REGISTRY}" && \
+    git config --global --add safe.directory /home/somebody/app
 
-FROM python:3.12-slim
-
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
-
-WORKDIR /app
-
-COPY --from=builder /usr/local /usr/local
+RUN pip install --upgrade pip && pip install poetry==$POETRY_VERSION && \
+    pip install poetry-plugin-pypi-mirror && \
+    POETRY_PYPI_MIRROR_URL="https://${PYTHON_REGISTRY}" poetry install
 
 COPY . .
 
-ENTRYPOINT ["python", "-m", "app.main"]
+RUN poetry run mkdocs build --strict --verbose --site-dir public
+
+FROM nginx:alpine
+COPY --from=0 /home/somebody/app/public /usr/share/nginx/html
+CMD ["nginx", "-g", "daemon off;"]

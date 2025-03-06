@@ -7,14 +7,30 @@ on:
   pull_request:
 
 jobs:
-  conditional-test:
+  Compendium:
     if: github.ref == 'refs/heads/main'
-    uses: parkermmr/compendium/.github/workflows/python-pytest.yml@main
+    uses: parkermmr/compendium/.github/workflows/compendium-python.yml@main
     with:
-      python-version: "3.10"
+      python-version: "3.11"
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-  conditional-lint:
-    if: github.ref == 'refs/heads/main'
-    uses: parkermmr/compendium/.github/workflows/python-lint.yml@main
-    with:
-      python-version: "3.10"
+  Publish:
+    needs: Compendium
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    if: >
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      (contains(github.event.head_commit.modified, 'mkdocs.yml') ||
+       startsWith(join(github.event.head_commit.modified, ' '), 'docs/'))
+    steps:
+      - uses: parkermmr/compendium/jobs/release/publish-docs@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          sha: ${{ github.sha }}
+          ref_name: ${{ github.ref }}
+

@@ -3,10 +3,10 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "python-template"
+name = "Kraken"
 version = "0.1.0"
-description = "A production-ready Python template with advanced features."
-authors = ["Unknown"]
+description = "A simple, lightweight, and extensible Python package for exporting, transforming, and loading Confluence pages into markdown."
+authors = ["Parker Rennie"]
 package-mode = false
 
 [tool.poetry.dependencies]
@@ -15,7 +15,22 @@ flake8 = "^7.1.2"
 isort = "^6.0.1"
 
 [tool.poetry.group.dev.dependencies]
+python = ">=3.9,<4.0"
 pytest = "^8.3.3"
 pytest-asyncio = "^0.21.0"
 flake8 = "^7.1.2"
 black = "^25.1.0"
+simpleeval = ">=0.9.11"
+python-json-logger = "^2.0.7"
+defusedxml = "^0.7.1"
+tox = "^4.18.0"
+mkdocs = "^1.6.1"
+mistune = ">=0.8,<0.84"
+mkdocs-material = "^9.5.42"
+mkdocstrings-python = "^1.12.2"
+mkdocs-markdownextradata-plugin = "^0.2.6"
+markdown-grid-tables = "^0.3.2"
+neoteroi-mkdocs = "^1.1.0"
+mkdocs-glightbox = "^0.4.0"
+mkdocs-with-confluence = "^0.2.9"
+pyyaml = "^6.0.2"
