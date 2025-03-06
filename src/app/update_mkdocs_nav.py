@@ -8,15 +8,17 @@ and writes it to the nav section in mkdocs.yml using ruamel.yaml for proper
 indentation. Directories in EXCLUDED_DIRS are skipped.
 """
 
-import os
 import argparse
 import logging
+import os
+
 from ruamel.yaml import YAML
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 EXCLUDED_DIRS = {"css", "img", "javascript", "overrides", "icons"}
+
 
 def build_nav_from_dir(dir_path, relative_path=""):
     """
@@ -54,6 +56,7 @@ def build_nav_from_dir(dir_path, relative_path=""):
             nav_items.append({title: path_rel})
     return nav_items
 
+
 def update_mkdocs_nav(docs_dir, mkdocs_yaml_path):
     """
     Update the nav section of mkdocs.yml with a navigation structure
@@ -83,6 +86,7 @@ def update_mkdocs_nav(docs_dir, mkdocs_yaml_path):
         logger.error("Error writing mkdocs.yml: %s", e)
     logger.info("mkdocs.yml updated with new nav structure.")
 
+
 def parse_args():
     """
     Parse command-line arguments.
@@ -91,16 +95,19 @@ def parse_args():
         Namespace: Parsed arguments.
     """
     parser = argparse.ArgumentParser(description="Update mkdocs nav from docs folder")
-    parser.add_argument("--docs-dir", default="docs",
-                        help="Directory containing Markdown docs")
-    parser.add_argument("--mkdocs-yaml", default="mkdocs.yml",
-                        help="Path to mkdocs.yml file")
+    parser.add_argument(
+        "--docs-dir", default="docs", help="Directory containing Markdown docs"
+    )
+    parser.add_argument(
+        "--mkdocs-yaml", default="mkdocs.yml", help="Path to mkdocs.yml file"
+    )
     return parser.parse_args()
+
 
 def main():
     args = parse_args()
     update_mkdocs_nav(args.docs_dir, args.mkdocs_yaml)
 
+
 if __name__ == "__main__":
     main()
-

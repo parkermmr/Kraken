@@ -14,8 +14,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from src.util.markdown.macros.code_macro_handler import CodeMacroHandler
 from src.util.markdown.macros.gliffy_macro_handler import GliffyMacroHandler
-from src.util.markdown.macros.table_html_transformer import \
-    transform_table_html
+from src.util.markdown.macros.table_html_transformer import transform_table_html
 from src.util.markdown.parser_config import TAG_HANDLERS
 from src.util.utils import decode_literal_unicode_escapes, sanitize_title
 
