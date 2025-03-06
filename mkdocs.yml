@@ -1,7 +1,7 @@
-site_name: Documentation
-site_description: Documentation for the project
-site_author: Author Name
-site_url: https://site.com
+site_name: Kraken
+site_description: Documentation for the Kraken Markdown tool.
+site_author: Parker Rennie
+site_url: https://kraken.pages.io.teampixl.info
 nav:
   - Home: index.md
 
