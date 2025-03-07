@@ -12,6 +12,9 @@ jobs:
     uses: parkermmr/compendium/.github/workflows/compendium-python.yml@main
     with:
       python-version: "3.11"
+      repo: ${{ github.repository }}
+      ref-name: ${{ github.ref_name }}
+      sha: ${{ github.sha }}
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -29,4 +32,5 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sha: ${{ github.sha }}
           ref_name: ${{ github.ref }}
+          branch: "gh-pages"
 
