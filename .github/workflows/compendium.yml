@@ -12,7 +12,7 @@ jobs:
     uses: parkermmr/compendium/.github/workflows/compendium-python.yml@main
     with:
       python-version: "3.11"
-      repo: ${{ github.repository }}
+      repo: "r3dsc0rp10n/kraken"
       ref-name: ${{ github.ref_name }}
       sha: ${{ github.sha }}
     secrets:
