@@ -9,7 +9,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/parkermmr/kraken">
-    <img src="docs/img/logo.png" alt="Logo" width="80" height="80">
+    <img src="docs/img/logo.png" alt="Logo" width="80" height="100">
   </a>
 
   <h3 align="center">Kraken</h3>
