@@ -16,9 +16,11 @@ FROM builder AS docs
 WORKDIR /docs
 COPY docs ./docs
 COPY mkdocs.yml .
-COPY pyproject.toml poetry.lock ./
-
-RUN poetry run mkdocs build --strict --verbose --site-dir public
+COPY pyproject.toml ./
+RUN poetry add mkdocs mkdocs-material \
+    mkdocstrings-python mkdocs-markdownextradata-plugin \
+    markdown-grid-tables neoteroi-mkdocs mkdocs-glightbox
+RUN poetry lock && poetry install && poetry run mkdocs build --strict --verbose --site-dir public
 
 FROM nginx:alpine
 
